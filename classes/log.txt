@@ -1,0 +1,178 @@
+[2024-12-27 18:07:42] [INFO] Test de création de log : ceci est un test.
+[2024-12-27 18:07:43] [INFO] Test de création de log : ceci est un test.
+[2024-12-27 18:13:16] [INFO] Test de création de log : ceci est un test.
+[2024-12-27 19:20:35] [INFO] Le hook actionValidateOrder est bien déclenché. 
+[2024-12-27 19:25:44] [INFO] Début du traitement pour la commande ID: 57
+[2024-12-27 19:25:44] [DEBUG] Produit ID: 37 - Quantité : 1
+[2024-12-27 19:25:44] [INFO] Numéros de série assignés pour le produit ID: 3
+[2024-12-27 19:25:44] [INFO] Fin du traitement pour la commande ID: 57
+[2025-01-09 13:23:03] [INFO] Début du traitement pour la commande ID: 70
+[2025-01-09 13:23:03] [DEBUG] Produit ID: 155 - Quantité : 1
+[2025-01-09 13:23:03] [ERROR] Pas de numéros de série disponibles pour le produit ID: 6
+[2025-01-09 13:23:03] [INFO] Fin du traitement pour la commande ID: 70
+[2025-02-06 14:17:03] [INFO] Début du traitement pour la commande ID: 24
+[2025-02-06 14:17:03] [DEBUG] Produit ID: 2028 - Quantité : 1
+[2025-02-06 14:17:03] [ERROR] Pas de numéros de série disponibles pour le produit ID: 48
+[2025-02-06 14:17:03] [INFO] Fin du traitement pour la commande ID: 24
+[2025-02-07 14:19:39] [INFO] Début du traitement pour la commande ID: 25
+[2025-02-07 14:19:39] [DEBUG] Produit ID: 156 - Quantité : 1
+[2025-02-07 14:19:39] [ERROR] Pas de numéros de série disponibles pour le produit ID: 4
+[2025-02-07 14:19:39] [INFO] Fin du traitement pour la commande ID: 25
+[2025-02-07 14:22:32] [INFO] Début du traitement pour la commande ID: 26
+[2025-02-07 14:22:32] [DEBUG] Produit ID: 51 - Quantité : 1
+[2025-02-07 14:22:32] [ERROR] Pas de numéros de série disponibles pour le produit ID: 2
+[2025-02-07 14:22:32] [INFO] Fin du traitement pour la commande ID: 26
+[2025-02-20 11:22:39] [INFO] Début du traitement pour la commande ID: 27
+[2025-02-20 11:22:39] [DEBUG] Produit ID: 189 - Quantité : 1
+[2025-02-20 11:22:39] [ERROR] Pas de numéros de série disponibles pour le produit ID: 5
+[2025-02-20 11:22:39] [INFO] Fin du traitement pour la commande ID: 27
+[2025-03-04 11:47:58] [INFO] Début du traitement pour la commande ID: 28
+[2025-03-04 11:47:58] [DEBUG] Produit ID: 1869 - Quantité : 1
+[2025-03-04 11:47:58] [ERROR] Pas de numéros de série disponibles pour le produit ID: 41
+[2025-03-04 11:47:58] [INFO] Fin du traitement pour la commande ID: 28
+[2025-03-06 09:49:42] [INFO] Début du traitement pour la commande ID: 29
+[2025-03-06 09:49:42] [DEBUG] Produit ID: 1215 - Quantité : 1
+[2025-03-06 09:49:42] [ERROR] Pas de numéros de série disponibles pour le produit ID: 23
+[2025-03-06 09:49:42] [INFO] Fin du traitement pour la commande ID: 29
+[2025-03-18 11:11:55] [INFO] Début du traitement pour la commande ID: 30
+[2025-03-18 11:11:55] [DEBUG] Produit ID: 1869 - Quantité : 1
+[2025-03-18 11:11:55] [ERROR] Pas de numéros de série disponibles pour le produit ID: 41
+[2025-03-18 11:11:55] [INFO] Fin du traitement pour la commande ID: 30
+[2025-03-24 11:38:56] [INFO] Début du traitement pour la commande ID: 31
+[2025-03-24 11:38:56] [DEBUG] Produit ID: 1868 - Quantité : 1
+[2025-03-24 11:38:56] [ERROR] Pas de numéros de série disponibles pour le produit ID: 41
+[2025-03-24 11:38:56] [INFO] Fin du traitement pour la commande ID: 31
+[2025-03-24 11:40:38] [INFO] Début du traitement pour la commande ID: 32
+[2025-03-24 11:40:38] [DEBUG] Produit ID: 1857 - Quantité : 1
+[2025-03-24 11:40:38] [ERROR] Pas de numéros de série disponibles pour le produit ID: 46
+[2025-03-24 11:40:38] [INFO] Fin du traitement pour la commande ID: 32
+[2025-03-26 13:01:51] [INFO] Début du traitement pour la commande ID: 33
+[2025-03-26 13:01:51] [DEBUG] Produit ID: 1869 - Quantité : 1
+[2025-03-26 13:01:51] [ERROR] Pas de numéros de série disponibles pour le produit ID: 41
+[2025-03-26 13:01:51] [INFO] Fin du traitement pour la commande ID: 33
+[2025-03-26 13:18:40] [INFO] Début du traitement pour la commande ID: 34
+[2025-03-26 13:18:40] [DEBUG] Produit ID: 1213 - Quantité : 1
+[2025-03-26 13:18:40] [ERROR] Pas de numéros de série disponibles pour le produit ID: 23
+[2025-03-26 13:18:40] [INFO] Fin du traitement pour la commande ID: 34
+[2025-03-28 13:30:28] [INFO] Début du traitement pour la commande ID: 35
+[2025-03-28 13:30:28] [DEBUG] Produit ID: 297 - Quantité : 1
+[2025-03-28 13:30:28] [ERROR] Pas de numéros de série disponibles pour le produit ID: 8
+[2025-03-28 13:30:28] [INFO] Fin du traitement pour la commande ID: 35
+[2025-03-31 13:23:37] [INFO] Début du traitement pour la commande ID: 36
+[2025-03-31 13:23:37] [DEBUG] Produit ID: 1868 - Quantité : 1
+[2025-03-31 13:23:37] [ERROR] Pas de numéros de série disponibles pour le produit ID: 41
+[2025-03-31 13:23:37] [INFO] Fin du traitement pour la commande ID: 36
+[2025-04-07 13:15:00] [INFO] Début du traitement pour la commande ID: 37
+[2025-04-07 13:15:00] [DEBUG] Produit ID: 1215 - Quantité : 1
+[2025-04-07 13:15:00] [ERROR] Pas de numéros de série disponibles pour le produit ID: 23
+[2025-04-07 13:15:00] [INFO] Fin du traitement pour la commande ID: 37
+[2025-04-07 23:51:56] [INFO] Début du traitement pour la commande ID: 38
+[2025-04-07 23:51:56] [DEBUG] Produit ID: 98 - Quantité : 1
+[2025-04-07 23:51:56] [ERROR] Pas de numéros de série disponibles pour le produit ID: 3
+[2025-04-07 23:51:56] [INFO] Fin du traitement pour la commande ID: 38
+[2025-04-09 15:28:34] [INFO] Début du traitement pour la commande ID: 39
+[2025-04-09 15:28:34] [DEBUG] Produit ID: 1869 - Quantité : 1
+[2025-04-09 15:28:34] [ERROR] Pas de numéros de série disponibles pour le produit ID: 41
+[2025-04-09 15:28:34] [INFO] Fin du traitement pour la commande ID: 39
+[2025-04-16 12:19:10] [INFO] Début du traitement pour la commande ID: 40
+[2025-04-16 12:19:10] [DEBUG] Produit ID: 2070 - Quantité : 1
+[2025-04-16 12:19:10] [ERROR] Pas de numéros de série disponibles pour le produit ID: 52
+[2025-04-16 12:19:10] [DEBUG] Produit ID: 318 - Quantité : 1
+[2025-04-16 12:19:10] [ERROR] Pas de numéros de série disponibles pour le produit ID: 9
+[2025-04-16 12:19:10] [INFO] Fin du traitement pour la commande ID: 40
+[2025-04-29 11:55:02] [INFO] Début du traitement pour la commande ID: 41
+[2025-04-29 11:55:02] [DEBUG] Produit ID: 1868 - Quantité : 1
+[2025-04-29 11:55:02] [ERROR] Pas de numéros de série disponibles pour le produit ID: 41
+[2025-04-29 11:55:02] [INFO] Fin du traitement pour la commande ID: 41
+[2025-05-09 10:48:49] [INFO] Début du traitement pour la commande ID: 42
+[2025-05-09 10:48:49] [DEBUG] Produit ID: 1465 - Quantité : 2
+[2025-05-09 10:48:49] [ERROR] Pas de numéros de série disponibles pour le produit ID: 29
+[2025-05-09 10:48:49] [INFO] Fin du traitement pour la commande ID: 42
+[2025-05-09 10:57:54] [INFO] Début du traitement pour la commande ID: 43
+[2025-05-09 10:57:54] [DEBUG] Produit ID: 1465 - Quantité : 1
+[2025-05-09 10:57:54] [ERROR] Pas de numéros de série disponibles pour le produit ID: 29
+[2025-05-09 10:57:54] [INFO] Fin du traitement pour la commande ID: 43
+[2025-05-12 14:13:15] [INFO] Début du traitement pour la commande ID: 44
+[2025-05-12 14:13:15] [DEBUG] Produit ID: 156 - Quantité : 1
+[2025-05-12 14:13:15] [ERROR] Pas de numéros de série disponibles pour le produit ID: 4
+[2025-05-12 14:13:15] [INFO] Fin du traitement pour la commande ID: 44
+[2025-05-13 18:05:56] [INFO] Début du traitement pour la commande ID: 45
+[2025-05-13 18:05:56] [DEBUG] Produit ID: 188 - Quantité : 2
+[2025-05-13 18:05:56] [ERROR] Pas de numéros de série disponibles pour le produit ID: 5
+[2025-05-13 18:05:56] [INFO] Fin du traitement pour la commande ID: 45
+[2025-05-15 08:53:32] [INFO] Début du traitement pour la commande ID: 46
+[2025-05-15 08:53:32] [DEBUG] Produit ID: 263 - Quantité : 1
+[2025-05-15 08:53:32] [ERROR] Pas de numéros de série disponibles pour le produit ID: 8
+[2025-05-15 08:53:32] [INFO] Fin du traitement pour la commande ID: 46
+[2025-05-19 09:45:32] [INFO] Début du traitement pour la commande ID: 47
+[2025-05-19 09:45:32] [DEBUG] Produit ID: 2097 - Quantité : 1
+[2025-05-19 09:45:32] [ERROR] Pas de numéros de série disponibles pour le produit ID: 57
+[2025-05-19 09:45:32] [INFO] Fin du traitement pour la commande ID: 47
+[2025-05-19 09:49:43] [INFO] Début du traitement pour la commande ID: 48
+[2025-05-19 09:49:43] [DEBUG] Produit ID: 2122 - Quantité : 1
+[2025-05-19 09:49:43] [ERROR] Pas de numéros de série disponibles pour le produit ID: 57
+[2025-05-19 09:49:43] [INFO] Fin du traitement pour la commande ID: 48
+[2025-05-22 09:55:51] [INFO] Début du traitement pour la commande ID: 49
+[2025-05-22 09:55:51] [DEBUG] Produit ID: 2137 - Quantité : 1
+[2025-05-22 09:55:51] [ERROR] Pas de numéros de série disponibles pour le produit ID: 58
+[2025-05-22 09:55:51] [INFO] Fin du traitement pour la commande ID: 49
+[2025-05-22 12:26:12] [INFO] Début du traitement pour la commande ID: 50
+[2025-05-22 12:26:12] [DEBUG] Produit ID: 2141 - Quantité : 1
+[2025-05-22 12:26:12] [ERROR] Pas de numéros de série disponibles pour le produit ID: 59
+[2025-05-22 12:26:12] [INFO] Fin du traitement pour la commande ID: 50
+[2025-05-22 12:28:45] [INFO] Début du traitement pour la commande ID: 51
+[2025-05-22 12:28:45] [DEBUG] Produit ID: 151 - Quantité : 1
+[2025-05-22 12:28:45] [ERROR] Pas de numéros de série disponibles pour le produit ID: 4
+[2025-05-22 12:28:45] [INFO] Fin du traitement pour la commande ID: 51
+[2025-05-22 22:41:06] [INFO] Début du traitement pour la commande ID: 52
+[2025-05-22 22:41:06] [DEBUG] Produit ID: 1545 - Quantité : 1
+[2025-05-22 22:41:06] [ERROR] Pas de numéros de série disponibles pour le produit ID: 34
+[2025-05-22 22:41:06] [INFO] Fin du traitement pour la commande ID: 52
+[2025-05-22 22:41:06] [INFO] Début du traitement pour la commande ID: 53
+[2025-05-22 22:41:06] [DEBUG] Produit ID: 1889 - Quantité : 1
+[2025-05-22 22:41:06] [ERROR] Pas de numéros de série disponibles pour le produit ID: 42
+[2025-05-22 22:41:06] [INFO] Fin du traitement pour la commande ID: 53
+[2025-05-22 22:41:07] [INFO] Début du traitement pour la commande ID: 54
+[2025-05-22 22:41:07] [DEBUG] Produit ID: 187 - Quantité : 1
+[2025-05-22 22:41:07] [ERROR] Pas de numéros de série disponibles pour le produit ID: 5
+[2025-05-22 22:41:07] [INFO] Fin du traitement pour la commande ID: 54
+[2025-05-22 22:41:08] [INFO] Début du traitement pour la commande ID: 55
+[2025-05-22 22:41:08] [DEBUG] Produit ID: 152 - Quantité : 1
+[2025-05-22 22:41:08] [ERROR] Pas de numéros de série disponibles pour le produit ID: 4
+[2025-05-22 22:41:08] [INFO] Fin du traitement pour la commande ID: 55
+[2025-05-22 22:41:08] [INFO] Début du traitement pour la commande ID: 56
+[2025-05-22 22:41:08] [DEBUG] Produit ID: 1545 - Quantité : 1
+[2025-05-22 22:41:08] [ERROR] Pas de numéros de série disponibles pour le produit ID: 34
+[2025-05-22 22:41:08] [INFO] Fin du traitement pour la commande ID: 56
+[2025-05-22 22:41:09] [INFO] Début du traitement pour la commande ID: 57
+[2025-05-22 22:41:09] [DEBUG] Produit ID: 1700 - Quantité : 1
+[2025-05-22 22:41:09] [ERROR] Pas de numéros de série disponibles pour le produit ID: 36
+[2025-05-22 22:41:09] [INFO] Fin du traitement pour la commande ID: 57
+[2025-05-22 22:41:09] [INFO] Début du traitement pour la commande ID: 58
+[2025-05-22 22:41:09] [DEBUG] Produit ID: 1700 - Quantité : 1
+[2025-05-22 22:41:09] [ERROR] Pas de numéros de série disponibles pour le produit ID: 36
+[2025-05-22 22:41:09] [INFO] Fin du traitement pour la commande ID: 58
+[2025-05-22 22:41:09] [INFO] Début du traitement pour la commande ID: 59
+[2025-05-22 22:41:09] [DEBUG] Produit ID: 187 - Quantité : 1
+[2025-05-22 22:41:09] [ERROR] Pas de numéros de série disponibles pour le produit ID: 5
+[2025-05-22 22:41:09] [INFO] Fin du traitement pour la commande ID: 59
+[2025-05-23 10:14:45] [INFO] Début du traitement pour la commande ID: 60
+[2025-05-23 10:14:45] [DEBUG] Produit ID: 99 - Quantité : 1
+[2025-05-23 10:14:45] [ERROR] Pas de numéros de série disponibles pour le produit ID: 3
+[2025-05-23 10:14:45] [INFO] Fin du traitement pour la commande ID: 60
+[2025-05-23 10:49:58] [INFO] Début du traitement pour la commande ID: 61
+[2025-05-23 10:49:58] [DEBUG] Produit ID: 317 - Quantité : 1
+[2025-05-23 10:49:58] [ERROR] Pas de numéros de série disponibles pour le produit ID: 9
+[2025-05-23 10:49:58] [INFO] Fin du traitement pour la commande ID: 61
+[2025-05-23 14:39:24] [INFO] Début du traitement pour la commande ID: 62
+[2025-05-23 14:39:24] [DEBUG] Produit ID: 152 - Quantité : 1
+[2025-05-23 14:39:24] [ERROR] Pas de numéros de série disponibles pour le produit ID: 4
+[2025-05-23 14:39:24] [INFO] Fin du traitement pour la commande ID: 62
+[2025-05-23 14:39:26] [INFO] Début du traitement pour la commande ID: 63
+[2025-05-23 14:39:26] [DEBUG] Produit ID: 1869 - Quantité : 1
+[2025-05-23 14:39:26] [ERROR] Pas de numéros de série disponibles pour le produit ID: 41
+[2025-05-23 14:39:26] [INFO] Fin du traitement pour la commande ID: 63
+[2025-05-23 14:39:27] [INFO] Début du traitement pour la commande ID: 64
+[2025-05-23 14:39:27] [DEBUG] Produit ID: 2099 - Quantité : 1
+[2025-05-23 14:39:27] [ERROR] Pas de numéros de série disponibles pour le produit ID: 57
+[2025-05-23 14:39:27] [INFO] Fin du traitement pour la commande ID: 64
