@@ -1,5 +1,5 @@
 import React from 'react';
-import { LucideIcon, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { DivideIcon as LucideIcon, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 interface StatsCardProps {
   title: string;
