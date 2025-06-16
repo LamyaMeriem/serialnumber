@@ -36,78 +36,109 @@ class AdminSerialNumberProductController extends ModuleAdminController
     public function initContent()
     {
         parent::initContent();
+        
+        // Gestion des messages de confirmation et d'erreur
         if (!empty($this->confirmations)) {
             $this->context->smarty->assign('confirmations', $this->confirmations);
         }
+        if (!empty($this->errors)) {
+            $this->context->smarty->assign('errors', $this->errors);
+        }
 
-        if (strpos($_SERVER['QUERY_STRING'], 'deleteserial_numbers') !== false) {
-            $id_serial = isset($_GET['id_serial']) ? (int)$_GET['id_serial'] : null;
+        // Gestion de la suppression des numéros de série
+        if (Tools::getValue('action') === 'delete' && Tools::getValue('id_serial')) {
+            $this->processDeleteSerialNumber();
+        }
+
+        // Gestion du changement de statut
+        if (Tools::getValue('action') === 'toggleStatus' && Tools::getValue('id_serial')) {
+            $this->processToggleStatus();
+        }
         
-            if ($id_serial) {
-                $serialNumber = new SerialNumberHelper($id_serial);
+        $this->context->smarty->assign('current_tab', $this->controller_name);
+
+        // Ajouter le header commun à toutes les pages du module
+        $header = $this->context->smarty->fetch($this->module->getLocalPath() . 'views/templates/admin/header.tpl');
+        $this->context->smarty->assign('header', $header);
+
+        // Gestion des différentes actions
+        $action = Tools::getValue('action');
+        
+        if ($action === 'view') {
+            $content = $this->renderViewSerialNumbersPage();
+            $this->context->smarty->assign('content', $content);
+            $this->setTemplate('content.tpl');
+            return;
+        }
+
+        if ($action === 'add') {
+            $content = $this->renderAddSerialNumberPage();
+            $this->context->smarty->assign('content', $content);
+            $this->setTemplate('content.tpl');
+            return;
+        }
+
+        // Gestion des requêtes AJAX
+        if (Tools::getValue('ajax')) {
+            if (Tools::getValue('action') == 'searchProduct') {
+                $this->ajaxSearchProducts();
+                exit;
+            }
+            
+            if (Tools::getValue('action') == 'saveSerialNumbers') {
+                $this->processSaveSerialNumbers();
+                exit;
+            }
+        }
+
+        // Assigner le template de base si aucune action spécifique n'est définie
+        $this->setTemplate('content.tpl');
+    }
+
+    /**
+     * Traite la suppression d'un numéro de série
+     */
+    private function processDeleteSerialNumber()
+    {
+        $id_serial = (int) Tools::getValue('id_serial');
+        
+        if ($id_serial) {
+            $serialNumber = new SerialNumberHelper($id_serial);
+            if (Validate::isLoadedObject($serialNumber)) {
                 if ($serialNumber->delete()) {
                     // Synchroniser le stock après suppression
                     SerialNumberHelper::synchronizeStock($serialNumber->id_product, $serialNumber->id_product_attribute);
-                    
                     $this->confirmations[] = $this->module->l('Le numéro de série a été supprimé et le stock mis à jour.');
                 } else {
                     $this->errors[] = $this->module->l('Erreur lors de la suppression du numéro de série.');
                 }
             } else {
-                $this->errors[] = $this->module->l('ID de numéro de série manquant.');
+                $this->errors[] = $this->module->l('Numéro de série introuvable.');
+            }
+        } else {
+            $this->errors[] = $this->module->l('ID de numéro de série manquant.');
+        }
+    }
+
+    /**
+     * Traite le changement de statut d'un numéro de série
+     */
+    private function processToggleStatus()
+    {
+        $id_serial = (int) Tools::getValue('id_serial');
+        
+        if ($id_serial) {
+            $serialNumber = new SerialNumberHelper($id_serial);
+            if (Validate::isLoadedObject($serialNumber)) {
+                $serialNumber->active = !$serialNumber->active;
+                if ($serialNumber->update()) {
+                    $status = $serialNumber->active ? 'activé' : 'désactivé';
+                    $this->confirmations[] = $this->module->l('Le numéro de série a été ' . $status . '.');
+                } else {
+                    $this->errors[] = $this->module->l('Erreur lors du changement de statut.');
+                }
             }
         }
-        
-        
-        
-        
-      
-        if (!empty($this->errors)) {
-            $this->context->smarty->assign('errors', $this->errors);
-        }
-    
-        $this->context->smarty->assign('current_tab', $this->controller_name);
-
-       
-        $header = $this->context->smarty->fetch($this->module->getLocalPath() . 'views/templates/admin/header.tpl');
-        $this->context->smarty->assign('header', $header);
-
-        if (Tools::getValue('action') === 'view') {
-        
-            $content = $this->renderViewSerialNumbersPage();
-            $this->context->smarty->assign('content', $content);
-
-            
-            $this->setTemplate('content.tpl');
-            return;
-        }
-        if (Tools::getValue('action') == 'searchProduct') {
-            $this->context->smarty->assign('ajaxUrl', $this->context->link->getAdminLink('AdminSerialNumberProduct'));
-        }
-
-        if (Tools::getValue('ajax') && Tools::getValue('action') == 'searchProduct') {
-            $this->ajaxSearchProducts();
-            exit;
-        }
-
-        if (Tools::getValue('action') === 'add') {
-            $content = $this->renderAddSerialNumberPage();
-            $this->context->smarty->assign('content', $content);
-
-            // On utilise setTemplate avec un fichier de template vide ou minimaliste
-            $this->setTemplate('content.tpl');
-            return;
-        }
-
-        if (Tools::getValue('ajax') && Tools::getValue('action') == 'saveSerialNumbers') {
-            $this->processSaveSerialNumbers();
-            exit; // Important pour arrêter l'exécution après l'appel
-        }
-        
-
-
-        // Assigner le template de base si aucune action spécifique n'est définie
-        $this->setTemplate('content.tpl');
     }
 
     public function renderList()
@@ -117,22 +148,24 @@ class AdminSerialNumberProductController extends ModuleAdminController
         $groupedProducts = [];
 
         // Si une recherche est effectuée
-        if (Tools::isSubmit('submitSearchProduct')) {
+        if (Tools::isSubmit('submitSearchProduct') || !empty($searchQuery)) {
             $products = $this->searchProducts($searchQuery);
             $groupedProducts = $this->groupProductsByProductId($products);
         }
 
         // Utilisation de HelperList pour afficher les résultats
         if (!empty($groupedProducts)) {
-
             return $this->renderProductListWithHelper($groupedProducts);
         }
+
+        // Affichage des messages
         if (!empty($this->confirmations)) {
             $this->displayInformation(implode('<br>', $this->confirmations));
         }
         if (!empty($this->errors)) {
             $this->displayWarning(implode('<br>', $this->errors));
         }
+
         // Assigner les variables à Smarty
         $this->context->smarty->assign([
             'search_query' => $searchQuery,
@@ -147,34 +180,32 @@ class AdminSerialNumberProductController extends ModuleAdminController
     private function renderProductListWithHelper($groupedProducts)
     {
         try {
-            // Vérifier si le tableau est vide
             if (empty($groupedProducts)) {
                 return '<p>Aucun produit trouvé.</p>';
             }
 
             $fields_list = [
                 'id_product' => ['title' => 'ID Produit', 'width' => 50, 'type' => 'int'],
-                'id_product_attribute' => ['title' => 'ID Produit Attribute', 'width' => 50, 'type' => 'int'],
+                'id_product_attribute' => ['title' => 'ID Déclinaison', 'width' => 50, 'type' => 'int'],
                 'name' => ['title' => 'Nom du Produit', 'width' => 200],
                 'product_reference' => ['title' => 'Référence Produit', 'width' => 100],
                 'attribute_reference' => ['title' => 'Référence Déclinaison', 'width' => 100],
                 'ean13' => ['title' => 'EAN13', 'width' => 100],
-                'available_serial_numbers' => ['title' => 'Numéro de série disponible', 'width' => 150],
-                'actions' => ['title' => 'Actions', 'width' => 150, 'align' => 'text-center', 'remove_onclick' => true, 'callback' => 'renderActionsButtons'],
+                'available_serial_numbers' => ['title' => 'N° série disponibles', 'width' => 100, 'align' => 'center'],
             ];
 
             $list = [];
             foreach ($groupedProducts as $productGroup) {
                 foreach ($productGroup as $product) {
-                    // Compter les numéros de série disponibles pour ce produit et cette déclinaison
-                    $availableSerialCount = Db::getInstance()->getValue('
-                    SELECT COUNT(*)
-                    FROM ' . _DB_PREFIX_ . 'serial_numbers sn
-                    WHERE sn.id_product = ' . (int) $product['id_product'] . '
-                        AND sn.id_product_attribute = ' . (int) $product['id_product_attribute'] . '
-                        AND (sn.id_order_detail = 0 OR sn.id_order_detail IS NULL)
-                        AND sn.deleted = 0
-                ');
+                    // Compter les numéros de série disponibles
+                    $availableSerialCount = (int) Db::getInstance()->getValue('
+                        SELECT COUNT(*)
+                        FROM ' . _DB_PREFIX_ . 'serial_numbers sn
+                        WHERE sn.id_product = ' . (int) $product['id_product'] . '
+                            AND sn.id_product_attribute = ' . (int) $product['id_product_attribute'] . '
+                            AND sn.status = "available"
+                            AND sn.deleted = 0
+                    ');
 
                     $list[] = [
                         'id_product' => $product['id_product'] ?: '--',
@@ -183,8 +214,7 @@ class AdminSerialNumberProductController extends ModuleAdminController
                         'product_reference' => $product['product_reference'] ?: '--',
                         'attribute_reference' => $product['attribute_reference'] ?: '--',
                         'ean13' => $product['ean13'] ?: '--',
-                        'available_serial_numbers' => $availableSerialCount ?: '0',
-                        'actions' => $product ?: '--',
+                        'available_serial_numbers' => $availableSerialCount,
                     ];
                 }
             }
@@ -200,96 +230,110 @@ class AdminSerialNumberProductController extends ModuleAdminController
             $helper->listTotal = count($list);
             $helper->currentIndex = $this->context->link->getAdminLink('AdminSerialNumberProduct');
             $helper->token = Tools::getAdminTokenLite('AdminSerialNumberProduct');
+            $helper->actions = ['view', 'add'];
 
             return $helper->generateList($list, $fields_list);
 
-        } catch (PrestaShopDatabaseException $e) {
-            return '<div style="color: red;">Erreur de base de données : ' . $e->getMessage() . '</div>';
         } catch (Exception $e) {
-            return '<div style="color: red;">Une erreur est survenue (renderProductListWithHelper)  : ' . $e->getMessage() . '</div>';
+            return '<div class="alert alert-danger">Erreur : ' . $e->getMessage() . '</div>';
         }
     }
 
-
-    public function renderActionsButtons($product)
+    public function displayViewLink($token, $id, $name = null)
     {
-        $viewUrl = $this->context->link->getAdminLink('AdminSerialNumberProduct')
-            . '&action=view&id_product=' . $product['id_product']
-            . '&id_product_attribute=' . $product['id_product_attribute'];
+        $tpl = $this->createTemplate('helpers/list/list_action_view.tpl');
+        if (!array_key_exists('View', self::$cache_lang)) {
+            self::$cache_lang['View'] = $this->l('View');
+        }
 
-        $addUrl = $this->context->link->getAdminLink('AdminSerialNumberProduct')
-            . '&action=add&id_product=' . $product['id_product']
-            . '&id_product_attribute=' . $product['id_product_attribute'];
+        $tpl->assign([
+            'href' => $this->context->link->getAdminLink('AdminSerialNumberProduct') .
+                     '&action=view&id_product=' . $id . '&id_product_attribute=' . Tools::getValue('id_product_attribute'),
+            'action' => self::$cache_lang['View'],
+        ]);
 
-        return '
-        <div class="btn-group action-dropdown" style="display: flex;">
-            <a href="' . $addUrl . '" class="btn btn-default">
-                <i class="icon-plus"></i> Ajouter
-            </a>
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu" role="menu">
-                <li>
-                    <a href="' . $viewUrl . '">
-                        <i class="icon-search-plus"></i> Afficher
-                    </a>
-                </li>
-            </ul>
-        </div>';
+        return $tpl->fetch();
     }
 
+    public function displayAddLink($token, $id, $name = null)
+    {
+        $tpl = $this->createTemplate('helpers/list/list_action_add.tpl');
+        if (!array_key_exists('Add', self::$cache_lang)) {
+            self::$cache_lang['Add'] = $this->l('Add');
+        }
 
+        $tpl->assign([
+            'href' => $this->context->link->getAdminLink('AdminSerialNumberProduct') .
+                     '&action=add&id_product=' . $id . '&id_product_attribute=' . Tools::getValue('id_product_attribute'),
+            'action' => self::$cache_lang['Add'],
+        ]);
+
+        return $tpl->fetch();
+    }
 
     public function renderAddSerialNumberPage()
     {
-        $id_product = Tools::getValue('id_product');
-        $id_product_attribute = Tools::getValue('id_product_attribute');
+        $id_product = (int) Tools::getValue('id_product');
+        $id_product_attribute = (int) Tools::getValue('id_product_attribute');
 
-        // Assigner les variables nécessaires à Smarty pour utilisation dans le template
+        if (!$id_product) {
+            return '<div class="alert alert-danger">Produit non spécifié.</div>';
+        }
+
+        // Récupérer les informations du produit
+        $product = new Product($id_product, false, $this->context->language->id);
+        $productName = $product->name;
+
+        if ($id_product_attribute) {
+            $combination = new Combination($id_product_attribute);
+            $attributes = $combination->getAttributesName($this->context->language->id);
+            if (!empty($attributes)) {
+                $attributeNames = array_column($attributes, 'name');
+                $productName .= ' - ' . implode(', ', $attributeNames);
+            }
+        }
+
         $this->context->smarty->assign([
             'id_product' => $id_product,
             'id_product_attribute' => $id_product_attribute,
+            'product_name' => $productName,
             'save_action_url' => $this->context->link->getAdminLink('AdminSerialNumberProduct') . '&action=saveSerialNumbers',
         ]);
 
         return $this->context->smarty->fetch($this->module->getLocalPath() . 'views/templates/admin/add_serial_number.tpl');
     }
 
-    // Méthode pour afficher la page de visualisation des numéros de série
     public function renderViewSerialNumbersPage()
     {
         try {
-            $id_product = Tools::getValue('id_product');
-            $id_product_attribute = Tools::getValue('id_product_attribute');
+            $id_product = (int) Tools::getValue('id_product');
+            $id_product_attribute = (int) Tools::getValue('id_product_attribute');
           
-            // Vérifier si id_product est bien récupéré
             if (!$id_product) {
                 throw new Exception('Produit non trouvé.');
             }
 
-            // Requête pour récupérer les numéros de série associés à ce produit et non supprimés (deleted = 0)
-            if ($id_product > 0 && $id_product_attribute > 0) {
-                $serialNumbers = Db::getInstance()->executeS('
-                    SELECT sn.id_serial, sn.serial_number, sn.id_order_detail, sn.status, sn.active, p.id_product, pl.name as product_name, pa.reference as attribute_reference, CONCAT(c.firstname, " ", c.lastname) AS customer
-                    FROM ' . _DB_PREFIX_ . 'serial_numbers sn
-                    LEFT JOIN ' . _DB_PREFIX_ . 'product p ON sn.id_product = p.id_product
-                    LEFT JOIN ' . _DB_PREFIX_ . 'product_lang pl ON p.id_product = pl.id_product AND pl.id_lang = ' . (int) $this->context->language->id . '
-                    LEFT JOIN ' . _DB_PREFIX_ . 'product_attribute pa ON sn.id_product_attribute = pa.id_product_attribute
-                    LEFT JOIN ' . _DB_PREFIX_ . 'order_detail od ON sn.id_order_detail = od.id_order_detail
-                    LEFT JOIN ' . _DB_PREFIX_ . 'orders o ON od.id_order = o.id_order
-                    LEFT JOIN ' . _DB_PREFIX_ . 'customer c ON o.id_customer = c.id_customer
-                    WHERE sn.id_product = ' . $id_product . ' AND sn.id_product_attribute = ' . $id_product_attribute . ' AND sn.deleted = 0
-                ');
-            } else {
-                throw new Exception('Les filtres de produit et d\'attribut de produit sont incorrects.');
-            }
-        
+            // Requête pour récupérer les numéros de série
+            $sql = '
+                SELECT sn.id_serial, sn.serial_number, sn.id_order_detail, sn.status, sn.active, 
+                       p.id_product, pl.name as product_name, pa.reference as attribute_reference, 
+                       CONCAT(c.firstname, " ", c.lastname) AS customer, o.id_order
+                FROM ' . _DB_PREFIX_ . 'serial_numbers sn
+                LEFT JOIN ' . _DB_PREFIX_ . 'product p ON sn.id_product = p.id_product
+                LEFT JOIN ' . _DB_PREFIX_ . 'product_lang pl ON p.id_product = pl.id_product AND pl.id_lang = ' . (int) $this->context->language->id . '
+                LEFT JOIN ' . _DB_PREFIX_ . 'product_attribute pa ON sn.id_product_attribute = pa.id_product_attribute
+                LEFT JOIN ' . _DB_PREFIX_ . 'order_detail od ON sn.id_order_detail = od.id_order_detail
+                LEFT JOIN ' . _DB_PREFIX_ . 'orders o ON od.id_order = o.id_order
+                LEFT JOIN ' . _DB_PREFIX_ . 'customer c ON o.id_customer = c.id_customer
+                WHERE sn.id_product = ' . $id_product . ' 
+                  AND sn.id_product_attribute = ' . $id_product_attribute . ' 
+                  AND sn.deleted = 0
+                ORDER BY sn.date_added DESC
+            ';
 
-            // Vérifier si la requête a renvoyé un résultat vide
+            $serialNumbers = Db::getInstance()->executeS($sql);
             $hasSerialNumbers = !empty($serialNumbers);
 
-            // Ajouter une ligne vide avec un message personnalisé pour afficher le header du tableau si aucun numéro de série n'est trouvé
             if (!$hasSerialNumbers) {
                 $serialNumbers = [
                     [
@@ -297,16 +341,15 @@ class AdminSerialNumberProductController extends ModuleAdminController
                         'serial_number' => 'Aucun numéro de série disponible',
                         'status' => '-',
                         'id_order_detail' => '-',
+                        'id_order' => '-',
                         'product_name' => '-',
                         'attribute_reference' => '-',
                         'customer' => '-',
                         'active' => '-',
-                        'custom_actions' => 'Aucune action disponible',
                     ],
                 ];
             }
 
-            // Utiliser HelperList pour afficher les numéros de série
             $helper = new HelperList();
             $helper->shopLinkType = '';
             $helper->simple_header = false;
@@ -314,97 +357,90 @@ class AdminSerialNumberProductController extends ModuleAdminController
             $helper->table = 'serial_numbers';
             $helper->show_toolbar = false;
             $helper->module = $this->module;
-
             $helper->title = 'Numéros de série pour ce produit';
             $helper->currentIndex = $this->context->link->getAdminLink('AdminSerialNumberProduct');
             $helper->token = Tools::getAdminTokenLite('AdminSerialNumberProduct');
 
-            // Définir les actions uniquement si des numéros de série existent
             if ($hasSerialNumbers) {
-                $helper->actions = ['delete', 'edit', 'view'];
-            } else {
-                $helper->actions = []; // Pas d'actions si la liste est vide
+                $helper->actions = ['delete'];
             }
 
-            // Liste des champs à afficher dans le tableau
             $fields_list = [
                 'id_serial' => ['title' => 'ID', 'width' => 50],
                 'serial_number' => ['title' => 'Numéro de Série', 'width' => 200],
                 'product_name' => ['title' => 'Produit', 'width' => 150],
                 'attribute_reference' => ['title' => 'Déclinaison', 'width' => 150],
-                'id_order_detail' => ['title' => 'Commande', 'width' => 100, 'callback' => 'renderOrderLink'],
+                'id_order' => ['title' => 'Commande', 'width' => 100, 'callback' => 'renderOrderLink'],
                 'customer' => ['title' => 'Client', 'width' => 150, 'callback' => 'renderCustomerName'],
-                'active' => ['title' => 'Actif', 'width' => 50, 'active' => 'status', 'align' => 'center', 'type' => 'bool', 'orderby' => false, 'callback' => 'renderActiveIcon'],
-                
+                'active' => ['title' => 'Actif', 'width' => 50, 'align' => 'center', 'type' => 'bool', 'callback' => 'renderActiveIcon'],
             ];
 
-            // Générer le tableau avec les données
             return $helper->generateList($serialNumbers, $fields_list);
 
-        } catch (PrestaShopDatabaseException $e) {
-            // Afficher l'erreur de base de données directement
-            echo '<div style="color: red;">Erreur de base de données : ' . $e->getMessage() . '</div>';
         } catch (Exception $e) {
-            // Afficher une erreur générale directement
-            echo '<div style="color: red;">Une erreur est survenue (renderViewSerialNumbersPage) : ' . $e->getMessage() . '</div>';
+            return '<div class="alert alert-danger">Erreur : ' . $e->getMessage() . '</div>';
         }
     }
-    
-    public function renderCustomActions($row)
-    { 
-        var_dump($row);
-        return "LAmya";
+
+    public function renderOrderLink($id_order, $row)
+    {
+        if ($id_order && $id_order != '-') {
+            return '<a href="' . $this->context->link->getAdminLink('AdminOrders', true, [], ['vieworder' => 1, 'id_order' => $id_order]) . '">#' . $id_order . '</a>';
+        }
+        return '-';
     }
-    
 
-
-    
-
-   
-
-    public function renderActionsButtonsSN($row)
-{
-   return "LAmya";
-}
-
-
-public function renderOrderLink($id_order_detail)
-{
-    if ($id_order_detail && $id_order_detail != '-') {
-        return '<a href="' . $this->context->link->getAdminLink('AdminOrders', true, [], ['vieworder' => 1, 'id_order' => $id_order_detail]) . '">' . $id_order_detail . '</a>';
-    }
-    return '-';
-}
     public function renderCustomerName($customer)
     {
-        if ($customer && $customer != '-') {
-            return $customer;
-        }
-        return '-'; // Valeur par défaut si les données sont incorrectes
+        return ($customer && $customer != '-') ? $customer : '-';
     }
+
     public function renderActiveIcon($active, $row)
     {
-        $activeIcon = $active ? 'icon-check' : 'icon-remove';
-        $toggleUrl = $this->context->link->getAdminLink('AdminSerialNumberProduct') . '&action=toggleStatus&id_serial=' . $row['id_serial'];
+        if ($row['id_serial'] == '-') {
+            return '-';
+        }
+        
+        $activeIcon = $active ? 'icon-check text-success' : 'icon-remove text-danger';
+        $toggleUrl = $this->context->link->getAdminLink('AdminSerialNumberProduct') . 
+                    '&action=toggleStatus&id_serial=' . $row['id_serial'];
         return '<a href="' . $toggleUrl . '"><i class="' . $activeIcon . '"></i></a>';
     }
 
+    public function displayDeleteLink($token, $id, $name = null)
+    {
+        if ($id == '-') {
+            return '';
+        }
 
-    // Fonction pour rechercher les produits dans la base de données
+        $tpl = $this->createTemplate('helpers/list/list_action_delete.tpl');
+        if (!array_key_exists('Delete', self::$cache_lang)) {
+            self::$cache_lang['Delete'] = $this->l('Delete');
+        }
+
+        $tpl->assign([
+            'href' => $this->context->link->getAdminLink('AdminSerialNumberProduct') .
+                     '&action=delete&id_serial=' . $id,
+            'action' => self::$cache_lang['Delete'],
+            'confirm' => $this->l('Êtes-vous sûr de vouloir supprimer ce numéro de série ?'),
+        ]);
+
+        return $tpl->fetch();
+    }
 
     private function searchProducts($query)
     {
         $id_lang = (int) $this->context->language->id;
 
-        // Début de la requête commune
         $sql = '
-        SELECT p.id_product, pa.id_product_attribute, p.reference AS product_reference, pa.reference AS attribute_reference, pl.name, pa.ean13, p.ean13 AS product_ean13
+        SELECT p.id_product, pa.id_product_attribute, p.reference AS product_reference, 
+               pa.reference AS attribute_reference, pl.name, pa.ean13, p.ean13 AS product_ean13
         FROM ' . _DB_PREFIX_ . 'product p
         LEFT JOIN ' . _DB_PREFIX_ . 'product_attribute pa ON p.id_product = pa.id_product
         LEFT JOIN ' . _DB_PREFIX_ . 'product_lang pl ON p.id_product = pl.id_product
-        WHERE pl.id_lang = ' . $id_lang;
+        WHERE pl.id_lang = ' . $id_lang . '
+          AND p.active = 1';
 
-        // Condition si une recherche est spécifiée
         if (!empty($query)) {
             $query = pSQL($query);
             $sql .= '
@@ -415,15 +451,13 @@ public function renderOrderLink($id_order_detail)
                 OR p.ean13 LIKE "%' . $query . '%"
                 OR pa.ean13 LIKE "%' . $query . '%"
             )';
-        } else {
-            // Ajout du tri aléatoire pour les produits sans recherche
-            $sql .= ' ORDER BY RAND() LIMIT 20';
         }
+
+        $sql .= ' ORDER BY pl.name ASC LIMIT 50';
 
         return Db::getInstance()->executeS($sql);
     }
 
-    // Fonction pour grouper les produits par ID de produit
     private function groupProductsByProductId($products)
     {
         $groupedProducts = [];
@@ -439,37 +473,50 @@ public function renderOrderLink($id_order_detail)
         $products = $this->searchProducts($searchQuery);
         $groupedProducts = $this->groupProductsByProductId($products);
 
-
-        // Générer le HTML pour afficher les résultats
         echo $this->renderProductListWithHelper($groupedProducts);
     }
 
     public function processSaveSerialNumbers()
     {
-        $response = ['success' => true, 'message' => 'Tous les numéros de série ont été enregistrés avec succès.'];
+        $response = ['success' => false, 'message' => ''];
 
         try {
             $serialNumbersString = Tools::getValue('serial_numbers');
             $idProduct = (int) Tools::getValue('id_product');
             $idProductAttribute = (int) Tools::getValue('id_product_attribute');
-            $isActive = Tools::getValue('active', 0);
+            $isActive = (bool) Tools::getValue('active', 0);
 
             if (empty($serialNumbersString) || !$idProduct) {
                 throw new Exception('Les numéros de série ou l\'ID produit sont manquants.');
             }
 
             $errors = [];
-            $serialNumbers = preg_split('/\r\n|\r|\n/', $serialNumbersString);
-            $quantityToAdd = 0; // Compteur pour la quantité à ajouter
+            $serialNumbers = preg_split('/[\r\n\s]+/', trim($serialNumbersString));
+            $quantityToAdd = 0;
+            $addedCount = 0;
 
             foreach ($serialNumbers as $serial) {
                 $serial = trim($serial);
-                if (empty($serial))
+                if (empty($serial)) {
                     continue;
+                }
+
+                // Vérifier si le numéro de série existe déjà
+                $exists = Db::getInstance()->getValue('
+                    SELECT COUNT(*) 
+                    FROM ' . _DB_PREFIX_ . 'serial_numbers 
+                    WHERE serial_number = "' . pSQL($serial) . '" 
+                      AND deleted = 0
+                ');
+
+                if ($exists) {
+                    $errors[] = 'Le numéro de série "' . $serial . '" existe déjà.';
+                    continue;
+                }
 
                 $serialNumber = new SerialNumberHelper();
                 $serialNumber->id_product = $idProduct;
-                $serialNumber->id_product_attribute = $idProductAttribute ? $idProductAttribute : null;
+                $serialNumber->id_product_attribute = $idProductAttribute ? $idProductAttribute : 0;
                 $serialNumber->serial_number = $serial;
                 $serialNumber->status = 'available';
                 $serialNumber->active = $isActive;
@@ -477,13 +524,14 @@ public function renderOrderLink($id_order_detail)
                 $serialNumber->date_added = date('Y-m-d H:i:s');
 
                 if ($serialNumber->add()) {
-                    $quantityToAdd++; // Incrémente le compteur pour chaque numéro ajouté
+                    $quantityToAdd++;
+                    $addedCount++;
                 } else {
                     $errors[] = 'Impossible d\'enregistrer le numéro de série : ' . $serial;
                 }
             }
 
-            // Mettre à jour la quantité de la déclinaison
+            // Mettre à jour la quantité de stock
             if ($quantityToAdd > 0) {
                 StockAvailable::updateQuantity(
                     $idProduct,
@@ -493,46 +541,26 @@ public function renderOrderLink($id_order_detail)
                 );
             }
 
-            if (!empty($errors)) {
-                $response['success'] = false;
-                $response['message'] = implode('<br>', $errors);
+            if ($addedCount > 0) {
+                $response['success'] = true;
+                $response['message'] = $addedCount . ' numéro(s) de série ajouté(s) avec succès.';
+                
+                if (!empty($errors)) {
+                    $response['message'] .= '<br>Erreurs : ' . implode('<br>', $errors);
+                }
+            } else {
+                $response['message'] = 'Aucun numéro de série n\'a pu être ajouté.';
+                if (!empty($errors)) {
+                    $response['message'] .= '<br>' . implode('<br>', $errors);
+                }
             }
 
         } catch (Exception $e) {
-            $response['success'] = false;
-            $response['message'] = $e->getMessage();
+            $response['message'] = 'Erreur : ' . $e->getMessage();
         }
 
-        // Envoyer le JSON final
         header('Content-Type: application/json');
         echo json_encode($response);
         exit;
     }
-
-
-
-
-    public function deleteSerialNumbers()
-{
-    die('deleteSerialNumbers called');
-}
-
-    
-
-    public function displayCustomMessage($message, $type = 'confirmation')
-    {
-        if ($type === 'error') {
-            $this->errors[] = $this->module->displayError($message);
-        } else {
-            $this->confirmations[] = $this->module->displayConfirmation($message);
-        }
-    }
-    public function testLogging()
-    {
-        $serialNumber = new SerialNumberHelper();
-        $serialNumber->createLog('Test de création de log : ceci est un test.', 'INFO');
-        die('Test exécuté');
-    }
-
-
 }
